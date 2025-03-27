@@ -2,12 +2,21 @@
 
 This is an extension to enable management of git submodules with the [github cli](https://cli.github.com/).
 
+## Instructions
+
 ### Installation
 
 ```
 gh extension install teaglebuilt/gh-subrepo
 ```
 
-### Instructions
+### Commands
 
-**commands** `gh subrepo clone {repo_url.git} {path}`
+**clone**: `gh subrepo clone {repo_url.git} {path}`
+**pull**: `gh subrepo pull`
+**push**: `gh subrepo push`
+
+
+### Inspiration
+
+Inspired by [git-subrepo](https://github.com/ingydotnet/git-subrepo)

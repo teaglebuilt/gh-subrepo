@@ -20,7 +20,6 @@ var cloneCmd = &cobra.Command{
 		if len(args) == 2 {
 			subdir = args[1]
 		} else {
-			// Use repo name as default subdir if not provided
 			parts := strings.Split(repoURL, "/")
 			lastPart := parts[len(parts)-1]
 			subdir = strings.TrimSuffix(lastPart, ".git")
