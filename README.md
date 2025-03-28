@@ -15,8 +15,9 @@ gh extension install teaglebuilt/gh-subrepo
 - **clone**: `gh subrepo clone {repo_url.git} {path}`
 - **pull**: `gh subrepo pull {path}`
 - **push**: `gh subrepo push {path}`
-
+- **fetch**: `gh subrepo fetch {path}`
+- **status**: `gh subrepo status {path}`
 
 ### Inspiration
 
-Inspired by [git-subrepo](https://github.com/ingydotnet/git-subrepo)
+:star: Inspired by [git-subrepo](https://github.com/ingydotnet/git-subrepo)
