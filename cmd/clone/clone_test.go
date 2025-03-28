@@ -1,13 +1,15 @@
-package cmd
+package clone
 
 import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	utils "github.com/teaglebuilt/gh-subrepo/internal"
 )
 
 func TestGitRepoRoot(t *testing.T) {
-	root, err := GitRepoRoot()
+	root, err := utils.GitRepoRoot()
 	if err != nil {
 		t.Fatalf("Failed to find git root: %v", err)
 	}
@@ -25,7 +27,7 @@ func TestExecCmd(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	testFile := filepath.Join(tmpDir, "testfile.txt")
-	err = ExecCmd(tmpDir, "touch", testFile)
+	err = utils.ExecCmd(tmpDir, "touch", testFile)
 	if err != nil {
 		t.Fatalf("ExecCmd failed: %v", err)
 	}
