@@ -64,7 +64,7 @@ var cloneCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		// 6. Commit changes
+		// Commit changes
 		if err := execCmd("git", "add", subdir); err != nil {
 			fmt.Printf("Failed to add subdir to git: %v\n", err)
 			os.Exit(1)
