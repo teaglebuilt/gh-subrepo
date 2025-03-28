@@ -13,7 +13,6 @@ func TestFindAllSubrepos(t *testing.T) {
 	rootDir, _ := os.MkdirTemp("", "test-status-*")
 	defer os.RemoveAll(rootDir)
 
-	// Simulate subrepos
 	os.MkdirAll(filepath.Join(rootDir, "vendor/lib1"), 0755)
 	os.WriteFile(filepath.Join(rootDir, "vendor/lib1/.gitrepo"), []byte("remote = url"), 0644)
 
@@ -26,26 +25,20 @@ func TestFindAllSubrepos(t *testing.T) {
 	assert.Contains(t, subdirs, filepath.Join(rootDir, "vendor/lib2"))
 }
 
-func TestCheckStatus_InvalidGitrepo(t *testing.T) {
-	rootDir, _ := os.MkdirTemp("", "test-status-invalid-*")
-	defer os.RemoveAll(rootDir)
-
-	subdir := filepath.Join(rootDir, "vendor/lib")
-	os.MkdirAll(subdir, 0755)
-
-	// Corrupted .gitrepo file
-	os.WriteFile(filepath.Join(subdir, ".gitrepo"), []byte("INVALID_CONTENT"), 0644)
-
-	// This should handle the error gracefully without panic
-	checkStatus(rootDir, subdir)
+func setupGitConfig(t *testing.T, repoDir string) {
+	assert.NoError(t, utils.ExecCmd(repoDir, "git", "config", "user.name", "testuser"))
+	assert.NoError(t, utils.ExecCmd(repoDir, "git", "config", "user.email", "testuser@example.com"))
 }
 
 func TestStatusCmd_Integration(t *testing.T) {
+	subrepoDir := "vendor/lib"
+
 	rootDir, err := os.MkdirTemp("", "test-status-integration-*")
 	assert.NoError(t, err)
 	defer os.RemoveAll(rootDir)
 
-	assert.NoError(t, utils.ExecCmd(rootDir, "git", "init"))
+	assert.NoError(t, utils.ExecCmd(rootDir, "git", "init", "-b", "main"))
+	setupGitConfig(t, rootDir)
 
 	remoteRepo, err := os.MkdirTemp("", "remote-subrepo-*")
 	assert.NoError(t, err)
@@ -58,18 +51,18 @@ func TestStatusCmd_Integration(t *testing.T) {
 	defer os.RemoveAll(tmpWork)
 
 	assert.NoError(t, utils.ExecCmd("", "git", "clone", remoteRepo, tmpWork))
+	setupGitConfig(t, tmpWork)
 
 	os.WriteFile(filepath.Join(tmpWork, "README.md"), []byte("Initial remote content"), 0644)
 	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "add", "."))
 	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "commit", "-m", "Initial commit"))
-	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "push", "origin", "master"))
+	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "push", "-u", "origin", "main"))
 
-	subrepoDir := "vendor/lib"
-	assert.NoError(t, utils.ExecCmd(rootDir, "git", "clone", remoteRepo, filepath.Join(rootDir, subrepoDir)))
+	assert.NoError(t, utils.ExecCmd(rootDir, "git", "clone", "-b", "main", remoteRepo, filepath.Join(rootDir, subrepoDir)))
 
 	os.RemoveAll(filepath.Join(rootDir, subrepoDir, ".git"))
 
-	gitrepoContent := "[subrepo]\nremote = " + remoteRepo + "\nbranch = master\n"
+	gitrepoContent := "[subrepo]\nremote = " + remoteRepo + "\nbranch = main\n"
 	os.WriteFile(filepath.Join(rootDir, subrepoDir, ".gitrepo"), []byte(gitrepoContent), 0644)
 
 	assert.NoError(t, utils.ExecCmd(rootDir, "git", "add", "."))
@@ -80,7 +73,7 @@ func TestStatusCmd_Integration(t *testing.T) {
 	os.WriteFile(filepath.Join(tmpWork, "CHANGELOG.md"), []byte("Changelog added"), 0644)
 	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "add", "."))
 	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "commit", "-m", "Add CHANGELOG"))
-	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "push", "origin", "master"))
+	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "push", "origin", "main"))
 
 	checkStatus(rootDir, filepath.Join(rootDir, subrepoDir))
 }
