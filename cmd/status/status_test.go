@@ -36,7 +36,8 @@ func TestStatusCmd_Integration(t *testing.T) {
 	setupGitConfig(t, tmpWork)
 
 	readmePath := filepath.Join(tmpWork, "README.md")
-	os.WriteFile(readmePath, []byte("Initial remote content"), 0644)
+	assert.NoError(t, os.WriteFile(readmePath, []byte("Initial remote content"), 0644))
+
 	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "add", "."))
 	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "commit", "-m", "Initial commit"))
 	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "push", "-u", "origin", "main"))
@@ -52,7 +53,7 @@ func TestStatusCmd_Integration(t *testing.T) {
 	assert.NoError(t, utils.ExecCmd(rootDir, "git", "add", "."))
 	assert.NoError(t, utils.ExecCmd(rootDir, "git", "commit", "-m", "Add subrepo"))
 
-	checkStatus(rootDir, subrepoPath)
+	checkStatus(subrepoPath)
 
 	changelogPath := filepath.Join(tmpWork, "CHANGELOG.md")
 	os.WriteFile(changelogPath, []byte("Changelog added"), 0644)
@@ -60,5 +61,5 @@ func TestStatusCmd_Integration(t *testing.T) {
 	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "commit", "-m", "Add CHANGELOG"))
 	assert.NoError(t, utils.ExecCmd(tmpWork, "git", "push", "origin", "main"))
 
-	checkStatus(rootDir, subrepoPath)
+	checkStatus(subrepoPath)
 }

@@ -1,0 +1,67 @@
+---
+name: Release Workflow
+
+on:
+  push:
+    tags:
+    - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Release GH CLI Extension
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: stable
+
+    - name: Generate Changelog
+      id: changelog
+      uses: mikepenz/release-changelog-builder-action@v4.2.2
+      with:
+        configuration: |
+          categories:
+            - title: "🚀 Features"
+              labels:
+                - feature
+            - title: "🐛 Fixes"
+              labels:
+                - fix
+            - title: "📖 Documentation"
+              labels:
+                - docs
+            - title: "🧰 Maintenance"
+              labels:
+                - chore
+                - ci
+                - refactor
+          template: |
+            ## What's Changed
+            $CHANGES
+          pr_template: "- #$NUMBER $TITLE @$AUTHOR"
+          outputFile: CHANGELOG.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Precompile GH Extension
+      uses: cli/gh-extension-precompile@v2
+      with:
+        go-version: stable
+        binary-name: 'gh-subrepo'
+
+  - name: Create GitHub Release
+    uses: softprops/action-gh-release@v2
+    with:
+      name: Release ${{ github.ref_name }}
+      tag_name: ${{ github.ref }}
+      body_path: CHANGELOG.md
+      files: dist/*

@@ -31,7 +31,7 @@ func StatusCmd() *cobra.Command {
 			}
 
 			for _, subdir := range subdirs {
-				checkStatus(repoRoot, subdir)
+				checkStatus(subdir)
 			}
 		},
 	}
@@ -40,16 +40,19 @@ func StatusCmd() *cobra.Command {
 
 func findAllSubrepos(root string) []string {
 	var dirs []string
-	filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
+	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
 		if filepath.Base(path) == ".gitrepo" {
 			dirs = append(dirs, filepath.Dir(path))
 		}
 		return nil
 	})
+	if err != nil {
+		fmt.Printf("Error walking directory: %v\n", err)
+	}
 	return dirs
 }
 
-func checkStatus(repoRoot, subdir string) {
+func checkStatus(subdir string) {
 	gitrepoFile := filepath.Join(subdir, ".gitrepo")
 
 	cfg, err := ini.Load(gitrepoFile)
@@ -91,5 +94,5 @@ func execCommandOutput(dir, name string, args ...string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(output[:40]), nil // 40-char hash
+	return string(output[:40]), nil
 }

@@ -41,7 +41,12 @@ func PullCmd() *cobra.Command {
 				fmt.Printf("Failed to create temp dir: %v\n", err)
 				os.Exit(1)
 			}
-			defer os.RemoveAll(tmpDir)
+
+			defer func() {
+				if err := os.RemoveAll(tmpDir); err != nil {
+					fmt.Printf("Warning: failed to remove tmp dir: %v\n", err)
+				}
+			}()
 
 			fmt.Printf("Pulling latest changes from %s...\n", remote)
 			if err := utils.ExecCmd("", "git", "clone", "--depth=1", "-b", branch, remote, tmpDir); err != nil {

@@ -22,7 +22,8 @@ func CloneCmd() *cobra.Command {
 
 func cloneRepository(cmd *cobra.Command, args []string) {
 	repoURL := args[0]
-	subdir := "."
+	var subdir string
+
 	if len(args) == 2 {
 		subdir = args[1]
 	} else {
