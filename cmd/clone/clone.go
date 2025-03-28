@@ -66,7 +66,7 @@ func cloneRepository(cmd *cobra.Command, args []string) {
 
 	gitRepoContent := fmt.Sprintf("[subrepo]\nremote = %s\nbranch = main\n", repoURL)
 	gitRepoPath := filepath.Join(subdir, ".gitrepo")
-	if err := os.WriteFile(gitRepoPath, []byte(gitRepoContent), 0644); err != nil {
+	if err := os.WriteFile(gitRepoPath, []byte(gitRepoContent), 0o644); err != nil {
 		fmt.Printf("Failed to write .gitrepo file: %v\n", err)
 		os.Exit(1)
 	}

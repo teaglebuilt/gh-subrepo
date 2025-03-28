@@ -22,3 +22,14 @@ formatters:
   - gofumpt
   - goimports
   - golines
+
+issues:
+  exclude-rules:
+  - path: cmd/clone/clone.go
+    linters:
+    - errcheck
+    - gocritic
+  - path: cmd/*_test.go
+    linters:
+    - errcheck
+    - gofumpt

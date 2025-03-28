@@ -1,20 +1,33 @@
----
-name: Release Workflow
+name: Automated GH CLI Extension Release
 
 on:
   push:
-    tags:
-    - "v*.*.*"
+    branches:
+    - main
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
-  release:
-    name: Build & Release GH CLI Extension
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+    - name: Create Release
+      id: release
+      uses: google-github-actions/release-please-action@v4
+      with:
+        release-type: go
+
+  build-release:
+    needs: create-release
+    if: ${{ needs.create-release.outputs.release_created }}
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Code
+    - name: Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -24,44 +37,14 @@ jobs:
       with:
         go-version: stable
 
-    - name: Generate Changelog
-      id: changelog
-      uses: mikepenz/release-changelog-builder-action@v4.2.2
-      with:
-        configuration: |
-          categories:
-            - title: "🚀 Features"
-              labels:
-                - feature
-            - title: "🐛 Fixes"
-              labels:
-                - fix
-            - title: "📖 Documentation"
-              labels:
-                - docs
-            - title: "🧰 Maintenance"
-              labels:
-                - chore
-                - ci
-                - refactor
-          template: |
-            ## What's Changed
-            $CHANGES
-          pr_template: "- #$NUMBER $TITLE @$AUTHOR"
-          outputFile: CHANGELOG.md
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Precompile GH Extension
       uses: cli/gh-extension-precompile@v2
       with:
         go-version: stable
         binary-name: 'gh-subrepo'
 
-  - name: Create GitHub Release
-    uses: softprops/action-gh-release@v2
-    with:
-      name: Release ${{ github.ref_name }}
-      tag_name: ${{ github.ref }}
-      body_path: CHANGELOG.md
-      files: dist/*
+    - name: Upload binaries to GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ needs.create-release.outputs.tag_name }}
+        files: dist/*
