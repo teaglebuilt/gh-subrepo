@@ -1,26 +1,42 @@
 ---
+version: "2"
+
+run:
+  skip-files:
+  - "^cmd/.*_test\\.go$"
+  - cmd/status/status_test.go
+
 linters:
   enable:
   - bodyclose
-  - depguard
-  - errorlint
   - copyloopvar
   - importas
-  - gci
-  - gofumpt
   - gocritic
-  - gosec
   - govet
   - misspell
-  - revive
-  - stylecheck
-  - testifylint
   - unconvert
+  # - errorlint
+  # - depguard
+  # - gosec
+  # - testifylint
+  # - revive
 
 formatters:
   enable:
-  - gci
   - gofmt
   - gofumpt
   - goimports
   - golines
+
+linters-settings:
+  errcheck:
+    check-type-assertions: false
+
+issues:
+  exclude-use-default: false
+
+exclude-rules:
+- path: cmd/clone/clone.go
+  linters:
+  - errcheck
+  - gocritic

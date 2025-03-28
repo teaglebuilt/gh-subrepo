@@ -5,6 +5,12 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/teaglebuilt/gh-subrepo/cmd/branch"
+	"github.com/teaglebuilt/gh-subrepo/cmd/clone"
+	"github.com/teaglebuilt/gh-subrepo/cmd/fetch"
+	"github.com/teaglebuilt/gh-subrepo/cmd/pull"
+	"github.com/teaglebuilt/gh-subrepo/cmd/push"
+	"github.com/teaglebuilt/gh-subrepo/cmd/status"
 )
 
 var rootCmd = &cobra.Command{
@@ -22,4 +28,12 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().BoolP("remote", "r", false, "Use remote mode via GitHub API")
+	rootCmd.AddCommand(
+		clone.CloneCmd(),
+		fetch.FetchCmd(),
+		status.StatusCmd(),
+		branch.BranchCmd(),
+		push.PushCmd(),
+		pull.PullCmd(),
+	)
 }

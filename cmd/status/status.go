@@ -1,4 +1,4 @@
-package cmd
+package status
 
 import (
 	"fmt"
@@ -7,45 +7,52 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	utils "github.com/teaglebuilt/gh-subrepo/internal"
 	"gopkg.in/ini.v1"
 )
 
-var statusCmd = &cobra.Command{
-	Use:   "status [subdir]",
-	Short: "Show status of subrepo(s)",
-	Args:  cobra.RangeArgs(0, 1),
-	Run: func(cmd *cobra.Command, args []string) {
-		repoRoot, err := GitRepoRoot()
-		if err != nil {
-			fmt.Printf("Not inside a git repository: %v\n", err)
-			os.Exit(1)
-		}
+func StatusCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "status [subdir]",
+		Short: "Show status of subrepo(s)",
+		Args:  cobra.RangeArgs(0, 1),
+		Run: func(cmd *cobra.Command, args []string) {
+			repoRoot, err := utils.GitRepoRoot()
+			if err != nil {
+				fmt.Printf("Not inside a git repository: %v\n", err)
+				os.Exit(1)
+			}
 
-		var subdirs []string
-		if len(args) == 1 {
-			subdirs = []string{args[0]}
-		} else {
-			subdirs = findAllSubrepos(repoRoot)
-		}
+			var subdirs []string
+			if len(args) == 1 {
+				subdirs = []string{args[0]}
+			} else {
+				subdirs = findAllSubrepos(repoRoot)
+			}
 
-		for _, subdir := range subdirs {
-			checkStatus(repoRoot, subdir)
-		}
-	},
+			for _, subdir := range subdirs {
+				checkStatus(subdir)
+			}
+		},
+	}
+	return cmd
 }
 
 func findAllSubrepos(root string) []string {
 	var dirs []string
-	filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
+	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
 		if filepath.Base(path) == ".gitrepo" {
 			dirs = append(dirs, filepath.Dir(path))
 		}
 		return nil
 	})
+	if err != nil {
+		fmt.Printf("Error walking directory: %v\n", err)
+	}
 	return dirs
 }
 
-func checkStatus(repoRoot, subdir string) {
+func checkStatus(subdir string) {
 	gitrepoFile := filepath.Join(subdir, ".gitrepo")
 
 	cfg, err := ini.Load(gitrepoFile)
@@ -60,7 +67,7 @@ func checkStatus(repoRoot, subdir string) {
 	tmpDir, _ := os.MkdirTemp("", "subrepo-status-*")
 	defer os.RemoveAll(tmpDir)
 
-	if err := ExecCmd("", "git", "clone", "--depth=1", "-b", branch, remote, tmpDir); err != nil {
+	if err := utils.ExecCmd("", "git", "clone", "--depth=1", "-b", branch, remote, tmpDir); err != nil {
 		fmt.Printf("[%s] failed to clone remote: %v\n", subdir, err)
 		return
 	}
@@ -87,9 +94,5 @@ func execCommandOutput(dir, name string, args ...string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(output[:40]), nil // 40-char hash
-}
-
-func init() {
-	rootCmd.AddCommand(statusCmd)
+	return string(output[:40]), nil
 }
