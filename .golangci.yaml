@@ -1,0 +1,26 @@
+---
+linters:
+  enable:
+  - bodyclose
+  - depguard
+  - errorlint
+  - copyloopvar
+  - importas
+  - gci
+  - gofumpt
+  - gocritic
+  - gosec
+  - govet
+  - misspell
+  - revive
+  - stylecheck
+  - testifylint
+  - unconvert
+
+formatters:
+  enable:
+  - gci
+  - gofmt
+  - gofumpt
+  - goimports
+  - golines
