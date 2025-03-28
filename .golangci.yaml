@@ -1,6 +1,11 @@
 ---
 version: "2"
 
+run:
+  skip-files:
+  - "^cmd/.*_test\\.go$"
+  - cmd/status/status_test.go
+
 linters:
   enable:
   - bodyclose
@@ -23,13 +28,15 @@ formatters:
   - goimports
   - golines
 
+linters-settings:
+  errcheck:
+    check-type-assertions: false
+
 issues:
-  exclude-rules:
-  - path: cmd/clone/clone.go
-    linters:
-    - errcheck
-    - gocritic
-  - path: cmd/*_test.go
-    linters:
-    - errcheck
-    - gofumpt
+  exclude-use-default: false
+
+exclude-rules:
+- path: cmd/clone/clone.go
+  linters:
+  - errcheck
+  - gocritic

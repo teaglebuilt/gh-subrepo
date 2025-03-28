@@ -13,17 +13,16 @@ func TestLoadGitRepoFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpDir)
 
 	subrepoDir := filepath.Join(tmpDir, "subrepo")
-	os.Mkdir(subrepoDir, 0755)
+	os.Mkdir(subrepoDir, 0o755)
 
 	gitrepoContent := `[subrepo]
 remote = https://github.com/example/repo.git
 branch = main
 `
 	gitrepoPath := filepath.Join(subrepoDir, ".gitrepo")
-	if err := os.WriteFile(gitrepoPath, []byte(gitrepoContent), 0644); err != nil {
+	if err := os.WriteFile(gitrepoPath, []byte(gitrepoContent), 0o644); err != nil {
 		t.Fatalf("Failed to write .gitrepo: %v", err)
 	}
 

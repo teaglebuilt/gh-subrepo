@@ -1,6 +1,7 @@
 package clone
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -24,7 +25,11 @@ func TestExecCmd(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			fmt.Printf("Warning: failed to remove tmp dir: %v\n", err)
+		}
+	}()
 
 	testFile := filepath.Join(tmpDir, "testfile.txt")
 	err = utils.ExecCmd(tmpDir, "touch", testFile)

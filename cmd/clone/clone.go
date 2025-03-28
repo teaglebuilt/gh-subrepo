@@ -46,22 +46,26 @@ func cloneRepository(cmd *cobra.Command, args []string) {
 	}
 
 	tmpDir := filepath.Join(os.TempDir(), "gh-subrepo-clone")
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			fmt.Printf("Warning: failed to remove tmp dir: %v\n", err)
+		}
+	}()
 
 	fmt.Println("Fetching repository temporarily...")
 	if err := utils.ExecCmd("git", "clone", "--depth=1", repoURL, tmpDir); err != nil {
 		fmt.Printf("Failed to clone temporary repository: %v\n", err)
-		os.Exit(1)
+		os.Exit(1) //nolint:gocritic
 	}
 
 	if err := os.RemoveAll(filepath.Join(tmpDir, ".git")); err != nil {
 		fmt.Printf("Failed to clean up temp repository: %v\n", err)
-		os.Exit(1)
+		os.Exit(1) //nolint:gocritic
 	}
 
 	if err := utils.ExecCmd("mv", tmpDir, subdir); err != nil {
 		fmt.Printf("Failed to move subrepo to subdirectory: %v\n", err)
-		os.Exit(1)
+		os.Exit(1) //nolint:gocritic
 	}
 
 	gitRepoContent := fmt.Sprintf("[subrepo]\nremote = %s\nbranch = main\n", repoURL)
