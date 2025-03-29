@@ -1,4 +1,4 @@
-name: Automated GH CLI Extension Release
+name: Release Extension
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
 
   build-release:
     needs: create-release
-    if: ${{ needs.create-release.outputs.release_created }}
+    if: ${{ needs.create-release.outputs.release_created == 'true' }} # Ensure this is a string comparison
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
