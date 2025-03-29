@@ -23,6 +23,7 @@ jobs:
       with:
         go-version: stable
         binary-name: gh-subrepo
+        github_token: ${{ secrets.RELEASE_PAT }}
 
     - name: Upload binaries to GitHub Release
       uses: softprops/action-gh-release@v2
