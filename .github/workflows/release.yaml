@@ -46,8 +46,7 @@ jobs:
     - name: Precompile GH Extension
       uses: cli/gh-extension-precompile@v2
       with:
-        go-version: stable
-        binary-name: gh-subrepo
+        go_version_file: go.mod
 
     - name: Upload binaries to GitHub Release
       uses: softprops/action-gh-release@v2
