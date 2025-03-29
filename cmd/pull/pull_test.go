@@ -5,39 +5,37 @@ import (
 	"path/filepath"
 	"testing"
 
-	"gopkg.in/ini.v1"
+	"github.com/stretchr/testify/assert"
+	utils "github.com/teaglebuilt/gh-subrepo/internal"
 )
 
-func TestLoadGitRepoFile(t *testing.T) {
+func TestPullCmd_NoGitRepo(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "test-pull-*")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
+	defer os.RemoveAll(tmpDir)
 
-	subrepoDir := filepath.Join(tmpDir, "subrepo")
-	os.Mkdir(subrepoDir, 0o755)
+	cwd, err := os.Getwd()
+	assert.NoError(t, err)
+	defer os.Chdir(cwd)
 
-	gitrepoContent := `[subrepo]
-remote = https://github.com/example/repo.git
-branch = main
-`
-	gitrepoPath := filepath.Join(subrepoDir, ".gitrepo")
-	if err := os.WriteFile(gitrepoPath, []byte(gitrepoContent), 0o644); err != nil {
-		t.Fatalf("Failed to write .gitrepo: %v", err)
-	}
+	assert.NoError(t, os.Chdir(tmpDir))
 
-	cfg, err := ini.Load(gitrepoPath)
-	if err != nil {
-		t.Fatalf("Failed to load .gitrepo: %v", err)
-	}
+	_, err = utils.GitRepoRoot()
+	assert.Error(t, err, "Expected error when not in a git repo")
+}
 
-	remote := cfg.Section("subrepo").Key("remote").String()
-	if remote != "https://github.com/example/repo.git" {
-		t.Fatalf("Expected remote URL to match, got %s", remote)
-	}
+func TestPullCmd_MissingGitrepoFile(t *testing.T) {
+	repoRoot, err := os.MkdirTemp("", "test-pull-gitrepo-*")
+	assert.NoError(t, err)
+	defer os.RemoveAll(repoRoot)
 
-	branch := cfg.Section("subrepo").Key("branch").String()
-	if branch != "main" {
-		t.Fatalf("Expected branch to be 'main', got %s", branch)
-	}
+	subdir := "vendor/lib"
+	assert.NoError(t, os.MkdirAll(filepath.Join(repoRoot, subdir), 0o755))
+
+	err = utils.ExecCmd(repoRoot, "git", "init", "-b", "main")
+	assert.NoError(t, err)
+
+	gitrepoPath := filepath.Join(repoRoot, subdir, ".gitrepo")
+	_, err = os.Stat(gitrepoPath)
+	assert.True(t, os.IsNotExist(err), "Expected .gitrepo file not to exist")
 }
