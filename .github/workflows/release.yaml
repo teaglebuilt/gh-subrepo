@@ -3,7 +3,7 @@ name: Release Extension
 on:
   push:
     branches:
-    - main
+    - master
 
 permissions:
   contents: write
@@ -18,13 +18,18 @@ jobs:
     steps:
     - name: Create Release
       id: release
-      uses: google-github-actions/release-please-action@v4
+      uses: googleapis/release-please-action@v4
       with:
         release-type: go
 
+    - name: Debug Outputs
+      run: |
+        echo "Release Created: ${{ steps.release.outputs.release_created }}"
+        echo "Tag Name: ${{ steps.release.outputs.tag_name }}"
+
   build-release:
     needs: create-release
-    if: ${{ needs.create-release.outputs.release_created == 'true' }} # Ensure this is a string comparison
+    if: ${{ needs.create-release.outputs.release_created == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
