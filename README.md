@@ -1,6 +1,7 @@
 ## gh subrepo extension
 
-[![CI](https://github.com/teaglebuilt/gh-subrepo/actions/workflows/ci.yaml/badge.svg)](https://github.com/teaglebuilt/gh-subrepo/actions/workflows/ci.yaml)
+
+![GitHub Release](https://img.shields.io/github/v/release/teaglebuilt/gh-subrepo)
 [![License](https://img.shields.io/badge/License-MIT-default.svg)](./LICENSE.md)
 
 This is an extension to enable management of git submodules with the [github cli](https://cli.github.com/).
