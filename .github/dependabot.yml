@@ -1,0 +1,17 @@
+---
+version: 2
+updates:
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+- package-ecosystem: gomod
+  directories:
+  - "/"
+  schedule:
+    interval: weekly
+  target-branch: main
+  commit-message:
+    prefix: "build(deps)"
+  ignore:
+  - dependency-name: "github.com/teaglebuilt/gh-subrepo"

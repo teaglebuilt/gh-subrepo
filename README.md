@@ -1,6 +1,5 @@
 ## gh subrepo extension
 
-
 ![GitHub Release](https://img.shields.io/github/v/release/teaglebuilt/gh-subrepo)
 [![License](https://img.shields.io/badge/License-MIT-default.svg)](./LICENSE.md)
 
