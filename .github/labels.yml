@@ -1,0 +1,7 @@
+---
+- name: area/core
+  color: "0e8a16"
+- name: area/cmd
+  color: "#3a71e5"
+- name: area/dependencies
+  color: "#6dd4cb"

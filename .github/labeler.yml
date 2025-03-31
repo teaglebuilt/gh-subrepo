@@ -1,0 +1,10 @@
+---
+area/core:
+- changed-files:
+  - any-glob-to-any-file: internal/**/*
+area/dependencies:
+- changed-files:
+  - any-glob-to-any-file: go.*
+area/command:
+- changed-files:
+  - any-glob-to-any-file: cmd/**/*
