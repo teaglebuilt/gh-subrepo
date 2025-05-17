@@ -9,9 +9,11 @@ This is an extension to enable management of git submodules with the [github cli
 
 ### Installation
 
-```
-gh extension install teaglebuilt/gh-subrepo
-```
+1. Install github cli extension. `gh extension install teaglebuilt/gh-subrepo`
+
+2. Run `gh subrepo init` to setup the tool. A folder will be created in your current working directory.
+
+3. Your good to go..`gh subrepo -h`
 
 ### Commands
 
