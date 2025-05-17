@@ -48,7 +48,7 @@ func initCmd() *cobra.Command {
 
 			fmt.Println("git-subrepo installed to:", installPath)
 			fmt.Println("You can now run `gh subrepo clone ...` etc.")
-
+			fmt.Println("reload your shell if it is not registered on system path")
 			return nil
 		},
 	}

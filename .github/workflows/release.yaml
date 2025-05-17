@@ -3,8 +3,6 @@ name: Release Extension
 on:
   pull_request:
     paths:
-    - 'cmd/**'
-    - 'internal/**'
     - go.*
     - main.go
     branches:
