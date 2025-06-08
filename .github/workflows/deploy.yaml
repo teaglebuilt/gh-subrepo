@@ -1,0 +1,26 @@
+on:
+  release:
+    type: published
+
+jobs:
+  deploy_gh_extension:
+  - name: Checkout code
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+
+  - name: Setup Go
+    uses: actions/setup-go@v5
+    with:
+      go-version: stable
+
+  - name: Precompile GH Extension
+    uses: cli/gh-extension-precompile@v2
+    with:
+      go_version_file: go.mod
+
+  - name: Upload binaries to GitHub Release
+    uses: softprops/action-gh-release@v2
+    with:
+      tag_name: ${{ needs.create-release.outputs.tag_name }}
+      files: dist/*
