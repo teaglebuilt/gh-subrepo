@@ -1,12 +1,17 @@
 name: Release Extension
 
 on:
+  push:
+    branches: [ master ]
+    tags: [ "v*" ]
   pull_request:
     paths:
     - go.*
     - main.go
     branches:
     - master
+  workflow_dispatch:
+
 
 permissions:
   contents: write
